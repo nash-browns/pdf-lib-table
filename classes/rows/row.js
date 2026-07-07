@@ -1,4 +1,4 @@
-import { Cell } from '../cells/cell';
+import { Cell } from '../cells/cell.js';
 
 export class Row {
     constructor(
@@ -10,27 +10,27 @@ export class Row {
         columnDimension,
         options,
         {
-            startingX = undefined,
-            dividedX = undefined,
-            dividedXThickness = 1,
-            dividedXColor = undefined,
+            tableStartingX = undefined,
+            tableDividedX = true, //must match the VerticalTable default
+            tableDividerXThickness = 1,
+            tableDividerXColor = undefined,
             tableWidth = undefined,
             rowBackgroundColor = undefined, 
-            alternateRowColor = false,
-            alternateRowColorValue = undefined,
+            rowAlternateColor = false,
+            rowAlternateColorValue = undefined,
         } = {}
     ){  
         this._page = page,
         this._data = data,
         this._columns = columns,
-        this._startingX = startingX,
-        this._dividedX = dividedX,
-        this._dividedXThickness = dividedXThickness,
-        this._dividedXColor = dividedXColor,
+        this._startingX = tableStartingX,
+        this._dividedX = tableDividedX,
+        this._dividedXThickness = tableDividerXThickness,
+        this._dividedXColor = tableDividerXColor,
         this._tableWidth = tableWidth,
         this._rowBackgroundColor = rowBackgroundColor,
-        this._alternateRowColor = alternateRowColor,
-        this._alternateRowColorValue = alternateRowColorValue,
+        this._alternateRowColor = rowAlternateColor,
+        this._alternateRowColorValue = rowAlternateColorValue,
         this._height = height,
         this._width = width,
         this._columnDimension = columnDimension,
@@ -68,14 +68,19 @@ export class Row {
     }
 
     drawRowBackground(startingY, index) {
+        const color = index % 2 !== 0 && this._alternateRowColor ? this._alternateRowColorValue : this._rowBackgroundColor;
+
+        //without a color pdf-lib emits a path with no paint operator, which
+        //some renderers draw anyway - skip instead
+        if(!color) return;
+
         this._page.page.drawRectangle({
             x: this._startingX,
-            // y: startingY - this._height + this._cellLineHeight - 1.25,
             y: startingY - this._height,
             width: this._width,
             height: this._height,
             borderWidth: 0,
-            color: index % 2 !== 0 && this._alternateRowColor ? this._alternateRowColorValue : this._rowBackgroundColor,
+            color,
             opacity: 0.25
         });
     }

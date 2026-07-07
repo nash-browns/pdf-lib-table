@@ -1,5 +1,5 @@
-import { getTextWidth } from "../../lib";
-import {Page} from './page'
+import { getTextWidth } from "../../lib/index.js";
+import {Page} from './page.js'
 
 export class Document {
     constructor
@@ -12,9 +12,9 @@ export class Document {
             continuesOnNextPage,
             continuationFiller,
             continuationTextX = undefined,
-            continuationTextY,
+            continuationTextY = 10,
             continuationFont,
-            continuationFontSize,
+            continuationFontSize = 15,
             continuationFillerHeight,
             continuationText = 'Continues on Next Page',
         } = {}

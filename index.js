@@ -1,4 +1,4 @@
-import { checkUserInputs } from './lib'
+import { checkUserInputs } from './lib/index.js'
 
 import {
     Document,
@@ -6,7 +6,7 @@ import {
     Header,
     Row,
     SubHeading,
-} from './classes';
+} from './classes/index.js';
 
 //default colors
 // const black = rgb(0, 0, 0);
@@ -25,19 +25,19 @@ export async function createPDFTables(
         tableType = 'vertical',
         pageDimensions,
         //TABLE SETTINGS
-        startingX,
-        startingY,
-        appendedPageStartX,
-        appendedPageStartY,
-        appendedMaxTableWidth,
+        tableStartingX,
+        tableStartingY,
+        appendedTableStartingX,
+        appendedTableStartingY,
+        appendedTableMaxWidth,
         tableType,
-        dividedX,
-        dividedY,
-        dividedXColor,
-        dividedYColor,
-        dividedXThickness,
-        dividedYThickness,
-        maxTableWidth,
+        tableDividedX,
+        tableDividedY,
+        tableDividerXColor,
+        tableDividerYColor,
+        tableDividerXThickness,
+        tableDividerYThickness,
+        tableMaxWidth,
         // maxTableHeight,
         rowHeightSizing,
         tableBorder,
@@ -62,32 +62,31 @@ export async function createPDFTables(
         subHeadingTextSize,
         subHeadingLineHeight,
         subHeadingDividedX,
-        subHeadingDividedXThickness,
-        subHeadingDividedXColor,
+        subHeadingDividerXThickness,
+        subHeadingDividerXColor,
         subHeadingDividedY,
-        subHeadingDividedYThickness,
-        subHeadingDividedYColor,
+        subHeadingDividerYThickness,
+        subHeadingDividerYColor,
         subHeadingWrapText,
         //HEADER SETTINGS
         headerFont, // Required -  No Default - any pdflib standard font
         headerDividedX,
         headerDividedY,
-        headerDividedXColor,
-        headerDividedYColor,
-        headerDividedXThickness,
-        headerDividedYThickness,
+        headerDividerXColor,
+        headerDividerYColor,
+        headerDividerXThickness,
+        headerDividerYThickness,
         headerBackgroundColor,
         headerHeight,
         headerTextColor,
         headerTextSize,
-        headerLineHeight,
         headerTextAlignment,
         headerTextJustification,
         headerWrapText,
         //ROWSETTINGS
         rowBackgroundColor,
-        alternateRowColor,
-        alternateRowColorValue,
+        rowAlternateColor,
+        rowAlternateColorValue,
 
         //CELL SETTINGS
         cellFont, // Required -  No Default - any pdflib standard font
@@ -122,16 +121,42 @@ export async function createPDFTables(
             // drawRuler(page.page, 'y', 25, rgb(.21, .24, .85));
 
             const isInitPage = loop === 0 ? true : false;
-            const table = new VerticalTable(remainingData, columns, page, isInitPage, options, options);
+
+            //resolve this page's table origin ONCE so every component (table
+            //border, header, rows, cells, column dimensions) draws from the same
+            //anchor - appended pages fall back to the initial values when
+            //appendedTableStartingX/Y are not provided.
+            //tableStartingY/appendedTableStartingY are measured DOWN from the top of the
+            //page (0,0 = top-left corner); pdf-lib coordinates are bottom-origin,
+            //so convert here - everything downstream works in pdf coordinates
+            const startX = (isInitPage ? options.tableStartingX : options.appendedTableStartingX ?? options.tableStartingX) ?? 0;
+            const startYFromTop = (isInitPage ? options.tableStartingY : options.appendedTableStartingY ?? options.tableStartingY) ?? 0;
+            const startY = page.height - startYFromTop;
+
+            //the table can never extend past the right edge of the page, so
+            //tableMaxWidth is capped at the space between tableStartingX and the page
+            //edge (and defaults to all of it when not provided)
+            const availableWidth = page.width - startX;
+            const requestedWidth = (isInitPage ? options.tableMaxWidth : options.appendedTableMaxWidth ?? options.tableMaxWidth) ?? availableWidth;
+            const tableWidth = Math.min(requestedWidth, availableWidth);
+
+            //without a borderColor pdf-lib emits the border as a path with no
+            //paint operator, which renders inconsistently across viewers - the
+            //documented default is black
+            const tableBorderColor = options.tableBorderColor ?? colors(0, 0, 0);
+
+            const pageOptions = { ...options, tableStartingX: startX, tableStartingY: startY, appendedTableStartingX: startX, appendedTableStartingY: startY, tableMaxWidth: tableWidth, appendedTableMaxWidth: tableWidth, tableBorderColor };
+
+            const table = new VerticalTable(remainingData, columns, page, isInitPage, pageOptions, pageOptions);
             const data = table.data;
 
-            const header = new Header(page, columns, table.columnDimensions, table.width, isInitPage, options, options);
+            const header = new Header(page, columns, table.columnDimensions, table.width, isInitPage, pageOptions, pageOptions);
             table.addHeader(header);
 
             //add rows to the table
             data.forEach((row) => {
-                if(row.type === 'row') table.addRow(new Row(page, row.data, row.rowHeight, columns, table.width, table.columnDimensions, options, options));
-                if(row.type === 'subheading') table.addRow(new SubHeading(page, row.data, row.rowHeight, options.subHeadingColumns, table.width, table.columnDimensions, options, options));
+                if(row.type === 'row') table.addRow(new Row(page, row.data, row.rowHeight, columns, table.width, table.columnDimensions, pageOptions, pageOptions));
+                if(row.type === 'subheading') table.addRow(new SubHeading(page, row.data, row.rowHeight, options.subHeadingColumns, table.width, table.columnDimensions, pageOptions, pageOptions));
             });
 
             //add table to the document

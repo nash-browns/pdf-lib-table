@@ -1,4 +1,4 @@
-import { getBaselineOffset, getCellPadding } from '../../lib';
+import { getBaselineOffset, getCellPadding } from '../../lib/index.js';
 
 export class Cell {
     constructor(
@@ -10,14 +10,14 @@ export class Cell {
         options = {}
     ){
         const {
-            startingX,
+            tableStartingX,
             cellFont,
             cellTextColor,
             cellTextSize = 10,
-            cellLineHeight,
-            dividedY,
-            dividedYThickness,
-            dividedYColor,
+            cellLineHeight = cellTextSize,
+            tableDividedY = true, //must match the VerticalTable default
+            tableDividerYThickness,
+            tableDividerYColor,
         } = options;
         const { cellPaddingX, cellPaddingY } = getCellPadding(options);
 
@@ -26,15 +26,15 @@ export class Cell {
         this._columnId = columnId,
         this._columnDimensions = columnDimension,
         this._startingX = columnDimension[columnId].startingX,
-        this._tableStartingX = startingX,
+        this._tableStartingX = tableStartingX,
         this._height = height,
         this._cellFont = cellFont,
         this._cellTextColor = cellTextColor,
         this._cellTextSize = cellTextSize,
         this._cellLineHeight = cellLineHeight,
-        this._dividedY = dividedY,
-        this._dividedYThickness = dividedYThickness,
-        this._dividedYColor = dividedYColor,
+        this._dividedY = tableDividedY,
+        this._dividedYThickness = tableDividerYThickness,
+        this._dividedYColor = tableDividerYColor,
         this._cellPaddingX = cellPaddingX,
         this._cellPaddingY = cellPaddingY
     }

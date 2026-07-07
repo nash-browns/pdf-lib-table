@@ -1,4 +1,4 @@
-import { SubheadingCell } from "../cells/subheadingCell";
+import { SubheadingCell } from "../cells/subheadingCell.js";
 
 export class SubHeading {
     constructor(
@@ -11,21 +11,21 @@ export class SubHeading {
         options,
         {
             subHeadingColumns,
-            startingX = undefined,
+            tableStartingX = undefined,
             tableWidth = undefined,
             subHeadingBackgroundColor = undefined,
             subHeadingDividedX = undefined,
-            subHeadingDividedXThickness = undefined,
-            subHeadingDividedXColor = undefined,
+            subHeadingDividerXThickness = 1,
+            subHeadingDividerXColor = undefined,
         } = {}
     ){  
         this._page = page,
         this._data = data,
         this._columnIds = columns,
-        this._startingX = startingX,
+        this._startingX = tableStartingX,
         this._subHeadingDividedX = subHeadingDividedX,
-        this._subHeadingDividedXThickness = subHeadingDividedXThickness,
-        this._subHeadingDividedXColor = subHeadingDividedXColor,
+        this._subHeadingDividedXThickness = subHeadingDividerXThickness,
+        this._subHeadingDividedXColor = subHeadingDividerXColor,
         this._tableWidth = tableWidth,
         this._subHeadingBackgroundColor = subHeadingBackgroundColor,
         this._height = height,
@@ -65,6 +65,10 @@ export class SubHeading {
     }
 
     drawRowBackground(startingY, index) {
+        //without a color pdf-lib emits a path with no paint operator, which
+        //some renderers draw anyway - skip instead
+        if(!this._subHeadingBackgroundColor) return;
+
         this._page.page.drawRectangle({
             x: this._startingX,
             y: startingY - this._height,

@@ -1,5 +1,5 @@
-import { wrapHeader } from "../../lib/headerDimensions";
-import { getTextWidth, getBaselineOffset, getCellPadding } from "../../lib";
+import { wrapHeader } from "../../lib/headerDimensions/index.js";
+import { getTextWidth, getBaselineOffset, getCellPadding } from "../../lib/index.js";
 
 export class HorizontalHeader {
     constructor(
@@ -10,24 +10,24 @@ export class HorizontalHeader {
         isInitPage,
         options,
         {
-            startingX = undefined,
-            startingY = undefined,
-            appendedPageStartX = undefined,
-            appendedPageStartY = undefined,
+            tableStartingX = undefined,
+            tableStartingY = undefined,
+            headerHeight = undefined,
+            appendedTableStartingX = undefined,
+            appendedTableStartingY = undefined,
             headerBackgroundColor = undefined,
             headerWrapText = true,
             headerFont = undefined,
             headerTextSize = 12,
-            headerLineHeight = 12,
             headerTextColor = undefined,
             headerTextAlignment = 'left',
             headerTextJustification = 'center',
             headerDividedX = true,
             headerDividedY = true,
-            headerDividedXColor = undefined,
-            headerDividedYColor = undefined,
-            headerDividedXThickness = 1,
-            headerDividedYThickness = 1
+            headerDividerXColor = undefined,
+            headerDividerYColor = undefined,
+            headerDividerXThickness = 1,
+            headerDividerYThickness = 1
         } ={},
     ){
         this._page = page,
@@ -35,22 +35,22 @@ export class HorizontalHeader {
         this._columnWidths = columnWidths,
         this._tableWidth = tableWidth,
         this._options = options,
-        this._startingX = isInitPage ? startingX : appendedPageStartX,
-        this._startingY = isInitPage ? startingY : appendedPageStartY,
+        this._startingX = isInitPage ? tableStartingX : appendedTableStartingX,
+        this._startingY = isInitPage ? tableStartingY : appendedTableStartingY,
+        this._headerMinHeight = headerHeight,
         this._headerBackgroundColor = headerBackgroundColor,
         this._headerWrapText = headerWrapText,
         this._headerFont = headerFont,
         this._headerTextSize = headerTextSize,
-        this._headerLineHeight = headerLineHeight,
         this._headerTextColor = headerTextColor,
         this._headerTextAlignment = headerTextAlignment,
         this._headerTextJustification = headerTextJustification,
         this._headerDividedX = headerDividedX,
         this._headerDividedY = headerDividedY,
-        this._headerDividedXColor = headerDividedXColor,
-        this._headerDividedYColor = headerDividedYColor,
-        this._headerDividedXThickness = headerDividedXThickness,
-        this._headerDividedYThickness = headerDividedYThickness,
+        this._headerDividedXColor = headerDividerXColor,
+        this._headerDividedYColor = headerDividerYColor,
+        this._headerDividedXThickness = headerDividerXThickness,
+        this._headerDividedYThickness = headerDividerYThickness,
         this._height,
         this._wrappedHeaders,
         this.init()
@@ -68,8 +68,9 @@ export class HorizontalHeader {
         const { additionalWrapCharacters } = this._options;
         const { cellPaddingX, cellPaddingY } = getCellPadding(this._options, 'header');
 
-        this._wrappedHeaders = wrapHeader({ columns: this._columns, columnDimensions: this._columnWidths, headerLineHeight: this._headerLineHeight, headerTextSize: this._headerTextSize, headerFont: this._headerFont, additionalWrapCharacters, cellPaddingX, cellPaddingY });
-        this._height = Math.max(...this._wrappedHeaders.map(({ height }) => height));
+        this._wrappedHeaders = wrapHeader({ columns: this._columns, columnDimensions: this._columnWidths, headerTextSize: this._headerTextSize, headerFont: this._headerFont, additionalWrapCharacters, cellPaddingX, cellPaddingY });
+        //headerHeight acts as a minimum - the header still grows to fit wrapped text
+        this._height = Math.max(...this._wrappedHeaders.map(({ height }) => height), this._headerMinHeight ?? 0);
 
         return this._height;
     }
@@ -87,6 +88,10 @@ export class HorizontalHeader {
     };
 
     drawFill() {
+        //without a color pdf-lib emits a path with no paint operator, which
+        //some renderers draw anyway - skip instead
+        if(!this._headerBackgroundColor) return;
+
         this._page.page.drawRectangle({
             x: this._startingX,
             y: this._startingY - this.getHeight(), //Math.max(headerHeight, headerFullTextHeight),
@@ -131,7 +136,7 @@ export class HorizontalHeader {
         const { cellPaddingX, cellPaddingY } = getCellPadding(this._options, 'header');
         let horizontalCursor = 0;
         this._wrappedHeaders.forEach(({ columnId, data, height }) => {
-            const textHeight = data.length * this._headerLineHeight;
+            const textHeight = data.length * this._headerTextSize;
 
             const justification = this._headerTextJustification === 'center' ?
             (this._height - textHeight) / 2 :
@@ -148,11 +153,11 @@ export class HorizontalHeader {
 
                 this._page.page.drawText(textLines, {
                     x: this._startingX + alignment + horizontalCursor,
-                    y: this._startingY - justification - (this._headerLineHeight * (i + 1)) + getBaselineOffset(this._headerFont, this._headerTextSize, this._headerLineHeight),
+                    y: this._startingY - justification - (this._headerTextSize * (i + 1)) + getBaselineOffset(this._headerFont, this._headerTextSize, this._headerTextSize),
                     size: this._headerTextSize,
                     font: this._headerFont,
                     color: this._headerTextColor,
-                    lineHeight: this._headerLineHeight
+                    lineHeight: this._headerTextSize
                 });
             })
             horizontalCursor += this._columnWidths[columnId].actualWidth;
