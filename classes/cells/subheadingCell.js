@@ -1,3 +1,5 @@
+import { getBaselineOffset, getCellPadding } from '../../lib';
+
 export class SubheadingCell {
     constructor(
         page,
@@ -6,7 +8,9 @@ export class SubheadingCell {
         columnId,
         columns,
         columnDimension,
-        {
+        options = {}
+    ){
+        const {
             startingX,
             cellFont,
             cellTextColor,
@@ -15,8 +19,9 @@ export class SubheadingCell {
             dividedY,
             dividedYThickness,
             dividedYColor,
-        }={}
-    ){
+        } = options;
+        const { cellPaddingX, cellPaddingY } = getCellPadding(options, 'subheading');
+
         this._page = page,
         this._data = data,
         this._columns = columns,
@@ -31,7 +36,9 @@ export class SubheadingCell {
         this._cellLineHeight = cellLineHeight,
         this._dividedY = dividedY,
         this._dividedYThickness = dividedYThickness,
-        this._dividedYColor = dividedYColor
+        this._dividedYColor = dividedYColor,
+        this._cellPaddingX = cellPaddingX,
+        this._cellPaddingY = cellPaddingY
     }
 
     drawCell(startingY) {
@@ -52,10 +59,12 @@ export class SubheadingCell {
     drawCellText(startingY) {
         if(!this._data) return;
 
+        const baselineOffset = getBaselineOffset(this._cellFont, this._cellTextSize, this._cellLineHeight);
+
         this._data.forEach((text, i) => {
             this._page.page.drawText(text, {
-                x: this._startingX,
-                y: startingY - this._cellLineHeight - (this._cellLineHeight * i),
+                x: this._startingX + this._cellPaddingX,
+                y: startingY - this._cellPaddingY - (this._cellLineHeight * (i + 1)) + baselineOffset,
                 font: this._cellFont,
                 size: this._cellTextSize,
                 lineHeight: this._cellLineHeight,

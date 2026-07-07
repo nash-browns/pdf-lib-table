@@ -23,9 +23,9 @@ export class VerticalTable {
             maxTableWidth = undefined,
             // maxTableHeight = undefined,
             rowHeightSizing = 'auto',
-            tableBoarder = true,
-            tableBoarderThickness = 1,
-            tableBoarderColor = undefined,
+            tableBorder = true,
+            tableBorderThickness = 1,
+            tableBorderColor = undefined,
             continuationFillerHeight = 20
         } = {}
     ){
@@ -44,10 +44,10 @@ export class VerticalTable {
         this._dividedXThickness = dividedXThickness,
         this._dividedYThickness = dividedYThickness,
         this._maxTableWidth = maxTableWidth,
-        this._maxTableHeight = page.height - (page.height - this._startingY) - continuationFillerHeight,
-        this._tableBoarder = tableBoarder,
-        this._tableBoarderThickness = tableBoarderThickness,
-        this._tableBoarderColor = tableBoarderColor,
+        this._maxTableHeight = page.height - (page.height - this._startingY) - continuationFillerHeight - (tableBorder ? tableBorderThickness / 2 : 0),
+        this._tableBorder = tableBorder,
+        this._tableBorderThickness = tableBorderThickness,
+        this._tableBorderColor = tableBorderColor,
         this._continuationFillerHeight = continuationFillerHeight,
         this._columnDimensions,
         this._columnHeaderHeight,
@@ -56,16 +56,17 @@ export class VerticalTable {
         this._remainingData,
         this._header,
         this._rows = [],
-        this._isInitPage;
+        this._isInitPage = isInitPage;
         this.init()
     }
     
     init() {
         const [finalColumnDimensions, tableHeight, wrappedTableData, remainingData] = processData(
-            this._data, 
+            this._data,
             this._columns,
             this._maxTableHeight,
-            this._options
+            this._options,
+            !this._isInitPage //appended pages must always accept at least one row so pagination terminates
         );
 
         this._columnDimensions = finalColumnDimensions;
@@ -111,29 +112,38 @@ export class VerticalTable {
     }
     
     drawTable() {
-        // Draw the header
-        if(this._tableBoarder) this.drawBoarder();
-        this._header.drawHeader()
-
-        //Draw Rows
-        let rowY = this._startingY - this._header.height;
+        //painted in layers so thick lines are never covered by a later element:
+        //all backgrounds first, then dividers and text, then the border on top
         const numberOfRows = this._rows.length;
 
-        this._rows.map((row, index) => {
-            const isLast = numberOfRows === index + 1;
-            const currentRow = row.drawRow(rowY, index, isLast);
-            rowY -= currentRow.height
-        })
+        this._header.drawFill();
+        let rowY = this._startingY - this._header.height;
+        this._rows.forEach((row, index) => {
+            row.drawRowBackground(rowY, index);
+            rowY -= row.height;
+        });
+
+        this._header.drawContents();
+        rowY = this._startingY - this._header.height;
+        this._rows.forEach((row, index) => {
+            row.drawRowContents(rowY, index, numberOfRows === index + 1);
+            rowY -= row.height;
+        });
+
+        if(this._tableBorder) this.drawBorder();
     }
     
-    drawBoarder() {
+    drawBorder() {
+        //the rectangle path sits exactly on the table bounds so the stroke
+        //straddles each edge half-in/half-out - the same model as the dividers,
+        //which is what the cell padding intrusion math assumes
         this._page.page.drawRectangle({
-            x: this._startingX - (this._tableBoarderThickness / 2),
-            y: this._startingY - this._tableHeight - this._header.height + (this._tableBoarderThickness / 2),
-            width: this._maxTableWidth + this._tableBoarderThickness,
+            x: this._startingX,
+            y: this._startingY - this._tableHeight - this._header.height,
+            width: this._maxTableWidth,
             height: this._tableHeight + this._header.height,
-            borderWidth: this._tableBoarderThickness,
-            borderColor: this._tableBoarderColor,
+            borderWidth: this._tableBorderThickness,
+            borderColor: this._tableBorderColor,
             opacity: 0,
             borderOpacity: 1,
         })

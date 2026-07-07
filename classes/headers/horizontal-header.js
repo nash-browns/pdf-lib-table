@@ -1,5 +1,5 @@
 import { wrapHeader } from "../../lib/headerDimensions";
-import { getTextWidth } from "../../lib";
+import { getTextWidth, getBaselineOffset, getCellPadding } from "../../lib";
 
 export class HorizontalHeader {
     constructor(
@@ -66,17 +66,22 @@ export class HorizontalHeader {
     
     getHeight() {
         const { additionalWrapCharacters } = this._options;
-        
-        this._wrappedHeaders = wrapHeader({ columns: this._columns, columnDimensions: this._columnWidths, headerLineHeight: this._headerLineHeight, headerTextSize: this._headerTextSize, headerFont: this._headerFont, additionalWrapCharacters });        
+        const { cellPaddingX, cellPaddingY } = getCellPadding(this._options, 'header');
+
+        this._wrappedHeaders = wrapHeader({ columns: this._columns, columnDimensions: this._columnWidths, headerLineHeight: this._headerLineHeight, headerTextSize: this._headerTextSize, headerFont: this._headerFont, additionalWrapCharacters, cellPaddingX, cellPaddingY });
         this._height = Math.max(...this._wrappedHeaders.map(({ height }) => height));
 
         return this._height;
     }
 
     drawHeader(tableWidth) {
-        console.log('horizontal header')
         this.drawFill(tableWidth);
-        if(this._headerDividedX) this.drawDividerX(tableWidth);
+        this.drawContents();
+    };
+
+    //dividers and text - drawn after all backgrounds (see VerticalTable.drawTable)
+    drawContents() {
+        if(this._headerDividedX) this.drawDividerX();
         if(this._headerDividedY) this.drawDividerY();
         this.drawHeadings();
     };
@@ -123,25 +128,27 @@ export class HorizontalHeader {
     }
 
     drawHeadings() {
+        const { cellPaddingX, cellPaddingY } = getCellPadding(this._options, 'header');
         let horizontalCursor = 0;
         this._wrappedHeaders.forEach(({ columnId, data, height }) => {
             const textHeight = data.length * this._headerLineHeight;
-            
-            const justification = this._headerTextJustification === 'center' ? 
+
+            const justification = this._headerTextJustification === 'center' ?
             (this._height - textHeight) / 2 :
-            this._headerTextJustification === 'bottom' ? 
-            this._height - textHeight :
-            0;
+            this._headerTextJustification === 'bottom' ?
+            this._height - textHeight - cellPaddingY :
+            cellPaddingY;
 
             data.forEach((textLines, i) => {
-                const alignment = this._headerTextAlignment === 'center' ? 
-                (this._columnWidths[columnId].actualWidth - getTextWidth(this._headerFont, this._headerTextSize, textLines)) / 2 : 
-                this._headerTextAlignment === 'right' ?  this._columnWidths[columnId].actualWidth - getTextWidth(this._headerFont, this._headerTextSize, textLines) : 
-                0
+                const availableWidth = this._columnWidths[columnId].actualWidth - (cellPaddingX * 2);
+                const alignment = cellPaddingX + (this._headerTextAlignment === 'center' ?
+                (availableWidth - getTextWidth(this._headerFont, this._headerTextSize, textLines)) / 2 :
+                this._headerTextAlignment === 'right' ?  availableWidth - getTextWidth(this._headerFont, this._headerTextSize, textLines) :
+                0)
 
                 this._page.page.drawText(textLines, {
                     x: this._startingX + alignment + horizontalCursor,
-                    y: this._startingY - justification - this._headerLineHeight - (this._headerLineHeight * i) + 1,
+                    y: this._startingY - justification - (this._headerLineHeight * (i + 1)) + getBaselineOffset(this._headerFont, this._headerTextSize, this._headerLineHeight),
                     size: this._headerTextSize,
                     font: this._headerFont,
                     color: this._headerTextColor,

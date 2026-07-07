@@ -15,7 +15,7 @@ import {
 // const grey = rgb(.03, .03, .03);
 
 export async function createPDFTables(
-    data, // Required - No Default - data t be printed
+    data, // Required - No Default - data to be printed
     page, // Required - No Default - page provided by pdf-lib
     pdfDoc, // Required - No Default - pdfDoc that the table will be printed on
     columns, // Required - No Default - column definitions
@@ -40,9 +40,9 @@ export async function createPDFTables(
         maxTableWidth,
         // maxTableHeight,
         rowHeightSizing,
-        tableBoarder,
-        tableBoarderThickness,
-        tableBoarderColor,
+        tableBorder,
+        tableBorderThickness,
+        tableBorderColor,
         rounded,
         //CONTINUES
         continuesOnNextPage,
@@ -103,14 +103,13 @@ export async function createPDFTables(
     const error = checkUserInputs(arguments);
     if(error) return error;
 
-    // build the document
+    // Build the document
     const document = new Document(page, pdfDoc, fonts, colors, options);
 
     //Add pages and print tables
     let remainingData = [...data];
 
-    const t0 = performance.now();
-    //Builds each page for the table. 
+    //Builds each page for the table.
         for (let loop = 0; remainingData.length > 0; loop++) {
 
             //add page to the doc if needed
@@ -140,8 +139,6 @@ export async function createPDFTables(
 
             remainingData = table.remainingData;
         };
-    const t1 = performance.now();
-    console.log(`table generation took ${t1 - t0} milliseconds.`);
 
     return document;
 };

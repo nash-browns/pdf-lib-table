@@ -30,7 +30,7 @@ export class Row {
         this._tableWidth = tableWidth,
         this._rowBackgroundColor = rowBackgroundColor,
         this._alternateRowColor = alternateRowColor,
-        this._alternateRowColorValue = alternateRowColorValue
+        this._alternateRowColorValue = alternateRowColorValue,
         this._height = height,
         this._width = width,
         this._columnDimension = columnDimension,
@@ -51,13 +51,20 @@ export class Row {
 
     drawRow(startingY, index, isLast) {
         this.drawRowBackground(startingY, index);
+        this.drawRowContents(startingY, index, isLast);
+
+        return this;
+    }
+
+    //dividers and text - drawn in a separate pass after ALL row backgrounds, so a
+    //thick divider intruding into the next row is never painted over by that
+    //row's background
+    drawRowContents(startingY, index, isLast) {
         if(this._dividedX) this.drawDividerX(startingY, isLast)
 
         this.cells.map((cell) => {
             cell.drawCell(startingY);
         })
-        
-        return this;
     }
 
     drawRowBackground(startingY, index) {

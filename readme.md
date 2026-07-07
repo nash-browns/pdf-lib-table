@@ -59,14 +59,14 @@ build data:
 Draw Table:
 ```
 drawTable({
-    data,                       // Required - No Default - data t be printed
+    data,                       // Required - No Default - data to be printed
     page,                       // Required - No Default - page provided by pdf-lib
     pdfDoc,                     // Required - No Default - pdfDoc that the table will be printed on
     columns,                    // Required - No Default - column definitions
     //TABLE SETTINGS
     startingX,                  // Default 0 - Default 0 - the starting x coordinate
     startingY,                  // Default 0 - the starting y coordinate
-    tableType,                  // Default 'vertical' - Options: vertical || horizontal || 2way TODO: horizontal || 2way not suported yet
+    tableType,                  // Default 'vertical' - Options: vertical || horizontal || 2way TODO: horizontal || 2way not supported yet
     dividedX,                   // Default true - sets if the table has x dividers
     dividedY,                   // Default true - sets if the table has y dividers
     dividedXColor,              // Default rgb(0,0,0) - can pass in any pdf-lib rgb value
@@ -76,15 +76,15 @@ drawTable({
     maxTableWidth,              // Default false - table is defaulted to page width but a max value can be passed
     maxTableHeight,             // Default false - table is defaulted to page height but a max value can be passed
     rowHeightSizing,            // Default 'auto' //TODO: remove this.
-    tableBoarder,               // Default true - tables have a boader by default but it can be removed by passing false
-    tableBoarderThickness,      // Default 1 - sets the thickness of the table boarder
-    tableBoarderColor,          // Default rgb(0,0,0) - can pass in any pdf-lib rgb value
+    tableBorder,               // Default true - tables have a border by default but it can be removed by passing false
+    tableBorderThickness,      // Default 1 - sets the thickness of the table border
+    tableBorderColor,          // Default rgb(0,0,0) - can pass in any pdf-lib rgb value
     rounded,                    //TODO: add or remove this option. Currently not supported
     customContinuesOnNextPage,  // Default false - can pass a function for what to draw
     smPageFiller,               // Default false - can pass a function for what to draw TODO: Currently not supported
     mdPageFiller,               // Default false - can pass a function for what to draw TODO: Currently not supported
     lgPageFiller,               // Default false - can pass a function for what to draw TODO: Currently not supported
-    //SUB HEADINGS TODO: not suported yet
+    //SUB HEADINGS TODO: not supported yet
     subHeadingBackgroundColor,  //TODO: Currently not supported
     subHeadingHeight,           //TODO: Currently not supported
     subHeadingFont,             //TODO: Currently not supported
