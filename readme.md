@@ -80,8 +80,9 @@ page except the last. `continuationFillerHeight` reserves the space for that foo
 the table.
 
 The `appendedTableStartingX/Y` and `appendedTableMaxWidth` options position the table on
-pages 2+ and default to the initial-page values. Appended pages are currently created at
-792x612 (landscape US Letter).
+pages 2+ and default to the initial-page values. Appended pages are created with the same
+dimensions as the initial page, so portrait, landscape, or any custom page size carries
+through the whole table.
 
 ## Options
 
@@ -99,6 +100,7 @@ pages 2+ and default to the initial-page values. Appended pages are currently cr
 | `tableBorder` | `true` | Draw a border around the table. |
 | `tableBorderThickness` | `1` | Border thickness. |
 | `tableBorderColor` | black | Any pdf-lib `rgb` value. |
+| `tableBorderRadius` | `0` | Rounded table corners - table content is clipped to the rounded shape. |
 | `tableDividedX` | `true` | Draw horizontal divider lines between rows. |
 | `tableDividedY` | `true` | Draw vertical divider lines between columns. |
 | `tableDividerXColor` | black | Row divider color. |
@@ -195,13 +197,6 @@ const data = [
 | `subHeadingDividerXColor` | black | Divider color. |
 | `subHeadingDividerXThickness` | `1` | Divider thickness. |
 
-## Not yet implemented
+## Roadmap
 
-These options are accepted but currently do nothing; they are planned:
-
-- `tableType: 'horizontal'` and `'2way'`
-- `pageDimensions` (appended pages are fixed at 792x612)
-- `rounded` - rounded table corners
-- `rowHeightSizing`
-- `cellHeight` - explicit row height (row heights are computed from content)
-- `continuesOnNextPage`, `continuationFiller` - custom continuation drawing
+- `tableType: 'horizontal'` and `'2way'` - only `'vertical'` tables are currently supported

@@ -23,7 +23,6 @@ export async function createPDFTables(
     colors,
     options = {
         tableType = 'vertical',
-        pageDimensions,
         //TABLE SETTINGS
         tableStartingX,
         tableStartingY,
@@ -39,14 +38,11 @@ export async function createPDFTables(
         tableDividerYThickness,
         tableMaxWidth,
         // maxTableHeight,
-        rowHeightSizing,
         tableBorder,
         tableBorderThickness,
         tableBorderColor,
-        rounded,
+        tableBorderRadius,
         //CONTINUES
-        continuesOnNextPage,
-        continuationFiller,
         continuationTextX ,
         continuationTextY,
         continuationFont,
@@ -91,7 +87,6 @@ export async function createPDFTables(
         //CELL SETTINGS
         cellFont, // Required -  No Default - any pdflib standard font
         cellTextSize,
-        cellHeight,
         cellLineHeight,
         cellTextColor,
         additionalWrapCharacters,
@@ -101,6 +96,10 @@ export async function createPDFTables(
     //Check for bad data being passed
     const error = checkUserInputs(arguments);
     if(error) return error;
+
+    //appended pages inherit the initial page's dimensions, so portrait/landscape
+    //(or any custom size) carries through the whole table
+    const initialPageSize = [page.getWidth(), page.getHeight()];
 
     // Build the document
     const document = new Document(page, pdfDoc, fonts, colors, options);
@@ -112,7 +111,7 @@ export async function createPDFTables(
         for (let loop = 0; remainingData.length > 0; loop++) {
 
             //add page to the doc if needed
-            if(loop !== 0) document.addPage([792.0, 612.0]); 
+            if(loop !== 0) document.addPage(initialPageSize);
 
             //create the table
             const page = document.pages[loop];

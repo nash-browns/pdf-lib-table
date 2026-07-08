@@ -9,8 +9,6 @@ export class Document {
         fonts,
         colors,
         {
-            continuesOnNextPage,
-            continuationFiller,
             continuationTextX = undefined,
             continuationTextY = 10,
             continuationFont,
@@ -23,7 +21,6 @@ export class Document {
         this._pdfDoc = pdfDoc,
         this._fonts = fonts,
         this._colors = colors,
-        this._continuesOnNextPage = continuesOnNextPage;
         this._continuationTextY = continuationTextY,
         this._continuationTextX = continuationTextX,
         this._continuationFont = continuationFont,
