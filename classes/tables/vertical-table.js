@@ -77,13 +77,16 @@ export class VerticalTable {
         );
 
         this._columnDimensions = finalColumnDimensions;
+        //the border, header, and rows span the columns' summed width - identical
+        //to tableMaxWidth in auto mode, narrower when fixed widths don't fill it
+        this._effectiveWidth = Object.values(finalColumnDimensions).reduce((acc, col) => acc + col.actualWidth, 0);
         this._tableHeight = tableHeight;
         this._finalData = wrappedTableData;
         this._remainingData = remainingData;
     }
     
     get width() {
-        return this._maxTableWidth;
+        return this._effectiveWidth;
     }
     
     get startingX() {
@@ -124,10 +127,10 @@ export class VerticalTable {
         return {
             x: this._startingX,
             y: this._startingY - height,
-            width: this._maxTableWidth,
+            width: this._effectiveWidth,
             height,
             //a radius can never exceed half the shorter side
-            radius: Math.max(0, Math.min(this._tableBorderRadius, this._maxTableWidth / 2, height / 2)),
+            radius: Math.max(0, Math.min(this._tableBorderRadius, this._effectiveWidth / 2, height / 2)),
         };
     }
 

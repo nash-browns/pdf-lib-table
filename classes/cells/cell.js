@@ -1,4 +1,4 @@
-import { getBaselineOffset, getCellPadding } from '../../lib/index.js';
+import { getBaselineOffset, getCellPadding, getTextWidth } from '../../lib/index.js';
 
 export class Cell {
     constructor(
@@ -7,7 +7,8 @@ export class Cell {
         height,
         columnId,
         columnDimension,
-        options = {}
+        options = {},
+        align = 'left' //'left' | 'center' | 'right' - from the column definition
     ){
         const {
             tableStartingX,
@@ -36,7 +37,8 @@ export class Cell {
         this._dividedYThickness = tableDividerYThickness,
         this._dividedYColor = tableDividerYColor,
         this._cellPaddingX = cellPaddingX,
-        this._cellPaddingY = cellPaddingY
+        this._cellPaddingY = cellPaddingY,
+        this._align = align
     }
 
     drawCell(startingY) {
@@ -57,9 +59,17 @@ export class Cell {
     drawCellText(startingY) {
         const baselineOffset = getBaselineOffset(this._cellFont, this._cellTextSize, this._cellLineHeight);
 
+        const availableWidth = this._columnDimensions[this._columnId].actualWidth - (this._cellPaddingX * 2);
+
         this._data.forEach((text, i) => {
+            const alignment = this._align === 'center' ?
+                (availableWidth - getTextWidth(this._cellFont, this._cellTextSize, text)) / 2 :
+                this._align === 'right' ?
+                availableWidth - getTextWidth(this._cellFont, this._cellTextSize, text) :
+                0;
+
             this._page.page.drawText(text, {
-                x: this._startingX + this._cellPaddingX,
+                x: this._startingX + this._cellPaddingX + alignment,
                 y: startingY - this._cellPaddingY - (this._cellLineHeight * (i + 1)) + baselineOffset,
                 font: this._cellFont,
                 size: this._cellTextSize,

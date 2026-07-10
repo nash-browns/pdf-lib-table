@@ -29,8 +29,8 @@ const timesRomanBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
 // column definitions - columnId keys into each row's data object
 const columns = [
     { columnId: 'serial', header: 'Serial' },
-    { columnId: 'product', header: 'Product' },
-    { columnId: 'price', header: 'Price' },
+    { columnId: 'product', header: 'Product', wrapText: false }, // truncate with an ellipsis instead of wrapping
+    { columnId: 'price', header: 'Price', width: 60, align: 'right' }, // fixed width in points, right-aligned
 ];
 
 // each entry is { type: 'row' | 'subheading', data: {...} }
@@ -68,6 +68,10 @@ to draw. All seven arguments are required - `fonts` is the `StandardFonts` impor
   page, and an explicit value is clamped so the table can never run off the page.
 - Column widths are computed automatically from the content within `tableMaxWidth`;
   row heights are computed from the wrapped text.
+- A column definition may pin its width with `width` (in points). Fixed widths are
+  honored exactly and override `tableMaxWidth`: when they total more than
+  `tableMaxWidth` the table simply grows to fit them, like an HTML table. Auto columns
+  share whatever space remains.
 - Values that leave no drawable room (a negative offset, a `tableStartingY` below the
   space reserved for the continuation footer, a `tableStartingX` past the page edge)
   throw a descriptive error.
@@ -85,6 +89,20 @@ dimensions as the initial page, so portrait, landscape, or any custom page size 
 through the whole table.
 
 ## Options
+
+### Columns
+
+Each column definition supports:
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `columnId` | **Required** | Keys into each row's `data` object. |
+| `header` | **Required** | Header text for the column. |
+| `width` | auto | Fixed column width in points (see Coordinates and sizing). |
+| `align` | `'left'` | Cell text alignment: `'left'`, `'center'` or `'right'`. Header text follows `headerTextAlignment`. |
+| `wrapText` | `true` | When `false`, cell text stays on one line and is truncated with an ellipsis when it doesn't fit. |
+
+Subheading column definitions (`subHeadingColumns`) also accept `align`.
 
 ### Table
 
@@ -127,7 +145,8 @@ through the whole table.
 | `headerHeight` | text height | Minimum header height - gives `headerTextJustification` room to work; the header still grows to fit wrapped text. |
 | `headerTextSize` | `12` | Header text size. |
 | `headerTextColor` | black | Any pdf-lib `rgb` value. |
-| `headerBackgroundColor` | none | Header fill, drawn at 25% opacity. |
+| `headerBackgroundColor` | none | Header fill color. |
+| `headerBackgroundOpacity` | `0.25` | Opacity of the header fill (0-1). |
 | `headerWrapText` | `true` | Wrap header text within the column (wrapped lines are spaced at `headerTextSize`). |
 | `headerTextAlignment` | `'left'` | `'left'`, `'center'` or `'right'`. |
 | `headerTextJustification` | `'center'` | `'top'`, `'center'` or `'bottom'`. |
@@ -142,7 +161,8 @@ through the whole table.
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `rowBackgroundColor` | none | Background color for every row, drawn at 25% opacity. |
+| `rowBackgroundColor` | none | Background color for every row. |
+| `rowBackgroundOpacity` | `0.25` | Opacity of row backgrounds, including the alternate color (0-1). |
 | `rowAlternateColor` | `false` | Alternate the background color of every other row. |
 | `rowAlternateColorValue` | none | The alternate color (used when `rowAlternateColor` is `true`). |
 
@@ -188,7 +208,8 @@ const data = [
 | `subHeadingLineHeight` | `subHeadingTextSize` | Subheading line height - drives subheading row height. |
 | `subHeadingHeight` | text height | Minimum subheading row height - the row still grows to fit wrapped text. |
 | `subHeadingTextColor` | `cellTextColor` | Any pdf-lib `rgb` value. |
-| `subHeadingBackgroundColor` | none | Background color for subheading rows, drawn at 25% opacity. |
+| `subHeadingBackgroundColor` | none | Background color for subheading rows. |
+| `subHeadingBackgroundOpacity` | `0.25` | Opacity of subheading backgrounds (0-1). |
 | `subHeadingWrapText` | `false` | Wrap subheading text within its column. |
 | `subHeadingDividedX` | `false` | Draw the line under subheading rows. |
 | `subHeadingDividedY` | follows `tableDividedY` | Draw vertical dividers between subheading cells. |

@@ -52,6 +52,7 @@ export async function createPDFTables(
         //SUB HEADINGS
         subHeadingColumns, // Required - No Default - column definitions
         subHeadingBackgroundColor,
+        subHeadingBackgroundOpacity,
         subHeadingHeight,
         subHeadingFont, //Currently not supported
         subHeadingTextColor,
@@ -73,6 +74,7 @@ export async function createPDFTables(
         headerDividerXThickness,
         headerDividerYThickness,
         headerBackgroundColor,
+        headerBackgroundOpacity,
         headerHeight,
         headerTextColor,
         headerTextSize,
@@ -81,6 +83,7 @@ export async function createPDFTables(
         headerWrapText,
         //ROWSETTINGS
         rowBackgroundColor,
+        rowBackgroundOpacity,
         rowAlternateColor,
         rowAlternateColorValue,
 

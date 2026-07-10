@@ -16,6 +16,7 @@ export class HorizontalHeader {
             appendedTableStartingX = undefined,
             appendedTableStartingY = undefined,
             headerBackgroundColor = undefined,
+            headerBackgroundOpacity = 0.25,
             headerWrapText = true,
             headerFont = undefined,
             headerTextSize = 12,
@@ -39,6 +40,7 @@ export class HorizontalHeader {
         this._startingY = isInitPage ? tableStartingY : appendedTableStartingY,
         this._headerMinHeight = headerHeight,
         this._headerBackgroundColor = headerBackgroundColor,
+        this._headerBackgroundOpacity = headerBackgroundOpacity,
         this._headerWrapText = headerWrapText,
         this._headerFont = headerFont,
         this._headerTextSize = headerTextSize,
@@ -99,7 +101,7 @@ export class HorizontalHeader {
             height: this._height, //Math.max(headerHeight, headerFullTextHeight),
             borderWidth: 0,
             color: this._headerBackgroundColor,
-            opacity: 0.25
+            opacity: this._headerBackgroundOpacity
         });
     }
 

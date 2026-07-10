@@ -16,6 +16,7 @@ export class Row {
             tableDividerXColor = undefined,
             tableWidth = undefined,
             rowBackgroundColor = undefined, 
+            rowBackgroundOpacity = 0.25,
             rowAlternateColor = false,
             rowAlternateColorValue = undefined,
         } = {}
@@ -29,12 +30,13 @@ export class Row {
         this._dividedXColor = tableDividerXColor,
         this._tableWidth = tableWidth,
         this._rowBackgroundColor = rowBackgroundColor,
+        this._rowBackgroundOpacity = rowBackgroundOpacity,
         this._alternateRowColor = rowAlternateColor,
         this._alternateRowColorValue = rowAlternateColorValue,
         this._height = height,
         this._width = width,
         this._columnDimension = columnDimension,
-        this._cells = columns.map(({columnId}) => new Cell(page, data[columnId], height, columnId, this._columnDimension, options))
+        this._cells = columns.map((col) => new Cell(page, data[col.columnId], height, col.columnId, this._columnDimension, options, col.align))
     }
 
     get cells() {
@@ -81,7 +83,7 @@ export class Row {
             height: this._height,
             borderWidth: 0,
             color,
-            opacity: 0.25
+            opacity: this._rowBackgroundOpacity
         });
     }
 

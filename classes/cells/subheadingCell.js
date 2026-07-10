@@ -1,4 +1,4 @@
-import { getBaselineOffset, getCellPadding } from '../../lib/index.js';
+import { getBaselineOffset, getCellPadding, getTextWidth } from '../../lib/index.js';
 
 export class SubheadingCell {
     constructor(
@@ -8,7 +8,8 @@ export class SubheadingCell {
         columnId,
         columns,
         columnDimension,
-        options = {}
+        options = {},
+        align = 'left' //'left' | 'center' | 'right' - from the subheading column definition
     ){
         //subheading cells render with the subHeading* options, falling back to
         //the cell/table equivalents when not provided
@@ -45,7 +46,8 @@ export class SubheadingCell {
         this._dividedYThickness = subHeadingDividerYThickness,
         this._dividedYColor = subHeadingDividerYColor,
         this._cellPaddingX = cellPaddingX,
-        this._cellPaddingY = cellPaddingY
+        this._cellPaddingY = cellPaddingY,
+        this._align = align
     }
 
     drawCell(startingY) {
@@ -66,13 +68,18 @@ export class SubheadingCell {
     drawCellText(startingY) {
         if(!this._data) return; //subheading rows may not have a value for every child column
 
-        if(!this._data) return;
-
         const baselineOffset = getBaselineOffset(this._cellFont, this._cellTextSize, this._cellLineHeight);
+        const availableWidth = this._columnDimensions[this._columnId].actualWidth - (this._cellPaddingX * 2);
 
         this._data.forEach((text, i) => {
+            const alignment = this._align === 'center' ?
+                (availableWidth - getTextWidth(this._cellFont, this._cellTextSize, text)) / 2 :
+                this._align === 'right' ?
+                availableWidth - getTextWidth(this._cellFont, this._cellTextSize, text) :
+                0;
+
             this._page.page.drawText(text, {
-                x: this._startingX + this._cellPaddingX,
+                x: this._startingX + this._cellPaddingX + alignment,
                 y: startingY - this._cellPaddingY - (this._cellLineHeight * (i + 1)) + baselineOffset,
                 font: this._cellFont,
                 size: this._cellTextSize,

@@ -14,6 +14,7 @@ export class SubHeading {
             tableStartingX = undefined,
             tableWidth = undefined,
             subHeadingBackgroundColor = undefined,
+            subHeadingBackgroundOpacity = 0.25,
             subHeadingDividedX = undefined,
             subHeadingDividerXThickness = 1,
             subHeadingDividerXColor = undefined,
@@ -28,10 +29,11 @@ export class SubHeading {
         this._subHeadingDividedXColor = subHeadingDividerXColor,
         this._tableWidth = tableWidth,
         this._subHeadingBackgroundColor = subHeadingBackgroundColor,
+        this._subHeadingBackgroundOpacity = subHeadingBackgroundOpacity,
         this._height = height,
         this._width = width,
         this._columnDimension = columnDimension,
-        this._cells = columns.map(({columnId, parentId}) => new SubheadingCell(page, data[parentId], height, parentId, columns, this._columnDimension, options))
+        this._cells = columns.map((col) => new SubheadingCell(page, data[col.parentId], height, col.parentId, columns, this._columnDimension, options, col.align))
     }
 
     get cells() {
@@ -76,7 +78,7 @@ export class SubHeading {
             height: this._height,
             borderWidth: 0,
             color: this._subHeadingBackgroundColor,
-            opacity: 0.25
+            opacity: this._subHeadingBackgroundOpacity
         });
     }
 
