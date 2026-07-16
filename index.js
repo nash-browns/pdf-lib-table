@@ -19,86 +19,12 @@ export async function createPDFTables(
     page, // Required - No Default - page provided by pdf-lib
     pdfDoc, // Required - No Default - pdfDoc that the table will be printed on
     columns, // Required - No Default - column definitions
-    fonts,
-    colors,
-    options = {
-        tableType = 'vertical',
-        //TABLE SETTINGS
-        tableStartingX,
-        tableStartingY,
-        appendedTableStartingX,
-        appendedTableStartingY,
-        appendedTableMaxWidth,
-        tableType,
-        tableDividedX,
-        tableDividedY,
-        tableDividerXColor,
-        tableDividerYColor,
-        tableDividerXThickness,
-        tableDividerYThickness,
-        tableMaxWidth,
-        // maxTableHeight,
-        tableBorder,
-        tableBorderThickness,
-        tableBorderColor,
-        tableBorderRadius,
-        //CONTINUES
-        continuationTextX ,
-        continuationTextY,
-        continuationFont,
-        continuationFontSize,
-        continuationFillerHeight,
-        continuationText,
-        //SUB HEADINGS
-        subHeadingColumns, // Required - No Default - column definitions
-        subHeadingBackgroundColor,
-        subHeadingBackgroundOpacity,
-        subHeadingHeight,
-        subHeadingFont, //Currently not supported
-        subHeadingTextColor,
-        subHeadingTextSize,
-        subHeadingLineHeight,
-        subHeadingDividedX,
-        subHeadingDividerXThickness,
-        subHeadingDividerXColor,
-        subHeadingDividedY,
-        subHeadingDividerYThickness,
-        subHeadingDividerYColor,
-        subHeadingWrapText,
-        //HEADER SETTINGS
-        headerFont, // Required -  No Default - any pdflib standard font
-        headerDividedX,
-        headerDividedY,
-        headerDividerXColor,
-        headerDividerYColor,
-        headerDividerXThickness,
-        headerDividerYThickness,
-        headerBackgroundColor,
-        headerBackgroundOpacity,
-        headerHeight,
-        headerTextColor,
-        headerTextSize,
-        headerTextAlignment,
-        headerTextJustification,
-        headerWrapText,
-        //ROWSETTINGS
-        rowBackgroundColor,
-        rowBackgroundOpacity,
-        rowAlternateColor,
-        rowAlternateColorValue,
+    fonts, // Required - No Default - the StandardFonts import from pdf-lib
+    colors, // Required - No Default - the rgb function from pdf-lib
+    options = {}) { //see the README for the full list of options
 
-        //CELL SETTINGS
-        cellFont, // Required -  No Default - any pdflib standard font
-        cellTextSize,
-        cellLineHeight,
-        cellTextColor,
-        additionalWrapCharacters,
-        //cellPaddingBottom=0,
-    } = {}) {
-
-    //Check for bad data being passed
-    const error = checkUserInputs(arguments);
-    if(error) return error;
+    //throws a descriptive error when required inputs are missing or unusable
+    checkUserInputs(data, page, pdfDoc, columns, fonts, colors, options);
 
     //appended pages inherit the initial page's dimensions, so portrait/landscape
     //(or any custom size) carries through the whole table

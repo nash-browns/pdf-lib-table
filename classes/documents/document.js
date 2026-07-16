@@ -35,6 +35,10 @@ export class Document {
         return this._pages;
     }
 
+    get tables() {
+        return this._tables;
+    }
+
     addPage(dimensions) {
         const page = this._pdfDoc.addPage(dimensions);
         this._pages.push(new Page(page));
