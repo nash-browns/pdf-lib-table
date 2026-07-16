@@ -8,9 +8,10 @@ export class VerticalTable {
         columns,
         page,
         isInitPage,
-        options,
+        options = {}
+    ){
         //TABLE
-        {
+        const {
             tableStartingX = 0,
             tableStartingY = 0,
             appendedTableStartingX = undefined,
@@ -22,7 +23,6 @@ export class VerticalTable {
             tableDividerXThickness = 1,
             tableDividerYThickness = 1,
             tableMaxWidth = undefined,
-            // maxTableHeight = undefined,
             tableBorder = true,
             tableBorderThickness = 1,
             tableBorderColor = undefined,
@@ -30,8 +30,8 @@ export class VerticalTable {
             continuationFillerHeight = 20,
             headerDividedX = true,       //defaults must match the Header class
             headerDividerXThickness = 1,
-        } = {}
-    ){
+        } = options;
+
         //REQUIRED
         this._data = data,
         this._columns = columns,

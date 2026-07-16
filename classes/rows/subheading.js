@@ -8,18 +8,17 @@ export class SubHeading {
         columns,
         width,
         columnDimension,
-        options,
-        {
-            subHeadingColumns,
+        options = {}
+    ){
+        const {
             tableStartingX = undefined,
-            tableWidth = undefined,
             subHeadingBackgroundColor = undefined,
             subHeadingBackgroundOpacity = 0.25,
             subHeadingDividedX = undefined,
             subHeadingDividerXThickness = 1,
             subHeadingDividerXColor = undefined,
-        } = {}
-    ){  
+        } = options;
+
         this._page = page,
         this._data = data,
         this._columnIds = columns,
@@ -27,7 +26,6 @@ export class SubHeading {
         this._subHeadingDividedX = subHeadingDividedX,
         this._subHeadingDividedXThickness = subHeadingDividerXThickness,
         this._subHeadingDividedXColor = subHeadingDividerXColor,
-        this._tableWidth = tableWidth,
         this._subHeadingBackgroundColor = subHeadingBackgroundColor,
         this._subHeadingBackgroundOpacity = subHeadingBackgroundOpacity,
         this._height = height,
@@ -85,8 +83,8 @@ export class SubHeading {
     drawDividerX(startingY, isLast) {
         if(isLast) return;
         this._page.page.drawLine({
-            start: { x: this._startingX, y: startingY - this._height}, //- Math.max(headerHeight, headerFullTextHeight) },
-            end: { x: this._startingX + this._width, y: startingY - this._height}, // - Math.max(headerHeight, headerFullTextHeight) },
+            start: { x: this._startingX, y: startingY - this._height},
+            end: { x: this._startingX + this._width, y: startingY - this._height},
             thickness: this._subHeadingDividedXThickness,
             color: this._subHeadingDividedXColor,
             opacity: 1,

@@ -3,13 +3,14 @@ import { getTextWidth, getBaselineOffset, getCellPadding } from "../../lib/index
 
 export class Header {
     constructor(
-        page, 
+        page,
         columns,
         columnWidths,
         tableWidth,
         isInitPage,
-        options,
-        {
+        options = {}
+    ){
+        const {
             tableStartingX = undefined,
             tableStartingY = undefined,
             headerHeight = undefined,
@@ -29,8 +30,8 @@ export class Header {
             headerDividerYColor = undefined,
             headerDividerXThickness = 1,
             headerDividerYThickness = 1
-        } ={},
-    ){
+        } = options;
+
         this._page = page,
         this._columns = columns,
         this._columnWidths = columnWidths,
@@ -96,9 +97,9 @@ export class Header {
 
         this._page.page.drawRectangle({
             x: this._startingX,
-            y: this._startingY - this.getHeight(), //Math.max(headerHeight, headerFullTextHeight),
+            y: this._startingY - this.getHeight(),
             width: this._tableWidth,
-            height: this._height, //Math.max(headerHeight, headerFullTextHeight),
+            height: this._height,
             borderWidth: 0,
             color: this._headerBackgroundColor,
             opacity: this._headerBackgroundOpacity
@@ -107,8 +108,8 @@ export class Header {
 
     drawDividerX() {
         this._page.page.drawLine({
-            start: { x: this._startingX, y: this._startingY - this._height}, //- Math.max(headerHeight, headerFullTextHeight) },
-            end: { x: this._startingX + this._tableWidth, y: this._startingY - this._height}, // - Math.max(headerHeight, headerFullTextHeight) },
+            start: { x: this._startingX, y: this._startingY - this._height},
+            end: { x: this._startingX + this._tableWidth, y: this._startingY - this._height},
             thickness: this._headerDividedXThickness,
             color: this._headerDividedXColor,
             opacity: 1,
@@ -124,7 +125,7 @@ export class Header {
             const dividerX = i == 0 ? this._columnWidths[col].actualWidth : this._columnWidths[col].actualWidth + counter;
             this._page.page.drawLine({
                 start: { x: this._startingX + dividerX, y: this._startingY },
-                end: { x: this._startingX + dividerX, y: this._startingY - this._height}, //Math.max(headerHeight, headerFullTextHeight) },
+                end: { x: this._startingX + dividerX, y: this._startingY - this._height},
                 thickness: this._headerDividedYThickness,
                 color: this._headerDividedYColor,
                 opacity: 0.75,

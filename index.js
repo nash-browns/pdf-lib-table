@@ -8,12 +8,6 @@ import {
     SubHeading,
 } from './classes/index.js';
 
-//default colors
-// const black = rgb(0, 0, 0);
-// const white = rgb(1, 1, 1);
-// const blue = rgb(.21, .24, .85);
-// const grey = rgb(.03, .03, .03);
-
 export async function createPDFTables(
     data, // Required - No Default - data to be printed
     page, // Required - No Default - page provided by pdf-lib
@@ -45,9 +39,6 @@ export async function createPDFTables(
             //create the table
             const page = document.pages[loop];
 
-            // drawRuler(page.page, 'x', 25, rgb(.21, .24, .85));
-            // drawRuler(page.page, 'y', 25, rgb(.21, .24, .85));
-
             const isInitPage = loop === 0 ? true : false;
 
             //resolve this page's table origin ONCE so every component (table
@@ -75,16 +66,16 @@ export async function createPDFTables(
 
             const pageOptions = { ...options, tableStartingX: startX, tableStartingY: startY, appendedTableStartingX: startX, appendedTableStartingY: startY, tableMaxWidth: tableWidth, appendedTableMaxWidth: tableWidth, tableBorderColor };
 
-            const table = new VerticalTable(remainingData, columns, page, isInitPage, pageOptions, pageOptions);
+            const table = new VerticalTable(remainingData, columns, page, isInitPage, pageOptions);
             const data = table.data;
 
-            const header = new Header(page, columns, table.columnDimensions, table.width, isInitPage, pageOptions, pageOptions);
+            const header = new Header(page, columns, table.columnDimensions, table.width, isInitPage, pageOptions);
             table.addHeader(header);
 
             //add rows to the table
             data.forEach((row) => {
-                if(row.type === 'row') table.addRow(new Row(page, row.data, row.rowHeight, columns, table.width, table.columnDimensions, pageOptions, pageOptions));
-                if(row.type === 'subheading') table.addRow(new SubHeading(page, row.data, row.rowHeight, options.subHeadingColumns, table.width, table.columnDimensions, pageOptions, pageOptions));
+                if(row.type === 'row') table.addRow(new Row(page, row.data, row.rowHeight, columns, table.width, table.columnDimensions, pageOptions));
+                if(row.type === 'subheading') table.addRow(new SubHeading(page, row.data, row.rowHeight, options.subHeadingColumns, table.width, table.columnDimensions, pageOptions));
             });
 
             //add table to the document

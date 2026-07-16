@@ -14,6 +14,9 @@ npm install pdf-lib-table pdf-lib
 
 `pdf-lib` is a peer dependency.
 
+TypeScript definitions are included - all column definitions, data entries, and options
+are fully typed, no `@types` package needed.
+
 ## Basic usage
 
 ```js

@@ -8,19 +8,19 @@ export class Row {
         columns,
         width,
         columnDimension,
-        options,
-        {
+        options = {}
+    ){
+        const {
             tableStartingX = undefined,
             tableDividedX = true, //must match the VerticalTable default
             tableDividerXThickness = 1,
             tableDividerXColor = undefined,
-            tableWidth = undefined,
-            rowBackgroundColor = undefined, 
+            rowBackgroundColor = undefined,
             rowBackgroundOpacity = 0.25,
             rowAlternateColor = false,
             rowAlternateColorValue = undefined,
-        } = {}
-    ){  
+        } = options;
+
         this._page = page,
         this._data = data,
         this._columns = columns,
@@ -28,7 +28,6 @@ export class Row {
         this._dividedX = tableDividedX,
         this._dividedXThickness = tableDividerXThickness,
         this._dividedXColor = tableDividerXColor,
-        this._tableWidth = tableWidth,
         this._rowBackgroundColor = rowBackgroundColor,
         this._rowBackgroundOpacity = rowBackgroundOpacity,
         this._alternateRowColor = rowAlternateColor,
@@ -90,8 +89,8 @@ export class Row {
     drawDividerX(startingY, isLast) {
         if(isLast) return;
         this._page.page.drawLine({
-            start: { x: this._startingX, y: startingY - this._height}, //- Math.max(headerHeight, headerFullTextHeight) },
-            end: { x: this._startingX + this._width, y: startingY - this._height}, // - Math.max(headerHeight, headerFullTextHeight) },
+            start: { x: this._startingX, y: startingY - this._height},
+            end: { x: this._startingX + this._width, y: startingY - this._height},
             thickness: this._dividedXThickness,
             color: this._dividedXColor,
             opacity: 1,
