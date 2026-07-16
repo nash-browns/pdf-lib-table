@@ -9,17 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # required for npm --provenance
+      id-token: write # required for OIDC trusted publishing and --provenance
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: npm
           registry-url: https://registry.npmjs.org
       - run: npm ci
       - run: npm test
       - run: npm run test:types
+      # trusted publishing (tokenless OIDC) needs npm >= 11.5.1
+      - run: npm install -g npm@latest
       # the tag must match package.json so a stale tag can never publish the wrong version
       - name: Check tag matches package.json version
         run: |
@@ -29,5 +31,3 @@ jobs:
             exit 1
           fi
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

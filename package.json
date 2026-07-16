@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nashtheflash/pdf-lib-table.git"
+    "url": "git+https://github.com/nash-browns/pdf-lib-table.git"
   },
   "keywords": [
     "pdf",
@@ -33,9 +33,9 @@
   "author": "Nash Bostwick",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nashtheflash/pdf-lib-table/issues"
+    "url": "https://github.com/nash-browns/pdf-lib-table/issues"
   },
-  "homepage": "https://github.com/nashtheflash/pdf-lib-table#readme",
+  "homepage": "https://github.com/nash-browns/pdf-lib-table#readme",
   "type": "module",
   "peerDependencies": {
     "pdf-lib": "^1.17.1"
